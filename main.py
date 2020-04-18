@@ -105,10 +105,13 @@ def move(data, clusters, centres, style):
             new_ite = 0
             cluster = np.array(d[i])
             max_cosine = -500.
-            for a in range(len(cluster)):
-                cosine = 0.
-                for b in range(len(cluster)):
-                    cosine += np.sum(cluster[a] * cluster[b]) / (np.sqrt(np.sum(np.square(cluster))) * np.sqrt(np.sum(np.square(cluster[b]))))
+            lc = len(cluster)
+            cos = np.zeros((lc, lc))
+            for a in range(lc):
+                for b in range(a, lc):
+                    cos[a][b] = cos[b][a] = np.sum(cluster[a] * cluster[b]) / (np.sqrt(np.sum(np.square(cluster))) * np.sqrt(np.sum(np.square(cluster[b]))))
+            for a in range(lc):
+                cosine = np.sum(cos[a])
                 if cosine > max_cosine:
                     max_cosine = cosine
                     new_ite = a
@@ -161,6 +164,7 @@ def run(style, norm, file):
     recall = [0 for i in range(10)]
     F_score = [0 for i in range(10)]
     Cases = 10
+    print("0%", end='')
     for case in range(Cases):
         for i in x:
             p, r, f = k_mean(data, labels, i, style)
