@@ -74,6 +74,8 @@ def move(data, clusters, centres, style):
             new_centres[ite] += data[i]
             count[ite] += 1
         for i in range(len(centres)):
+            if count[i] == 0:
+                count[i] = 1
             new_centres[i] = new_centres[i] / count[i]
             error += np.sum(np.abs(new_centres[i] - centres[i]))
     elif style == 'Manhattan':
@@ -82,17 +84,21 @@ def move(data, clusters, centres, style):
         for i in range(len(data)):
             d[int(clusters[i])].append(data[i])
         for i in range(k):
+            # a = np.zeros((len(d[i]), 300))
             a = np.array(d[i])
-            L = len(a)
+            L = len(d[i])
             new_centre = list()
             for j in range(300):
-                c = a[:, j]
-                c.reshape(1, L)
-                c.sort()
-                if L % 2:
-                    mid = c[L//2]
+                if L == 1:
+                    mid = a[0][j]
                 else:
-                    mid = (c[L//2] + c[L//2 - 1]) / 2
+                    c = a[:, j]
+                    c.reshape(1, L)
+                    c.sort()
+                    if L % 2:
+                        mid = c[L//2]
+                    else:
+                        mid = (c[L//2] + c[L//2 - 1]) / 2
                 new_centre.append(mid)
             new_centres[i] = np.array(new_centre)
             error += np.sum(np.abs(new_centres[i] - centres[i]))
@@ -179,6 +185,7 @@ def run(style, norm, file):
     plt.plot(x, precision, label="precision")
     plt.plot(x, recall, label="recall")
     plt.plot(x, F_score, label="F_score")
+    plt.title(file)
     plt.legend()
     plt.savefig('./result/' + file + '.png')
     return
